@@ -112,7 +112,9 @@ class CQKSANBlock(nn.Module):
             raise ValueError("token_embeddings and attention_mask are required")
         if token_embeddings.size(0) != attention_mask.size(0):
             raise ValueError("Batch size mismatch")
-            
+        
+        # Ensure dtype consistency (cast to float32 for projector)
+        token_embeddings = token_embeddings.float()
         reduced = torch.tanh(self.projector(token_embeddings)) * (math.pi * 0.9)
         quantum_tokens = self.quantum_encoder(reduced)
 

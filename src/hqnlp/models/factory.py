@@ -73,6 +73,9 @@ class HybridCQKSANDebertaClassifier(nn.Module):
 
     def forward(self, input_ids: torch.Tensor, attention_mask: torch.Tensor) -> dict[str, torch.Tensor]:
         token_embeddings, pooled = self.encoder(input_ids=input_ids, attention_mask=attention_mask)
+        # Ensure all tensors are in float32 to avoid dtype mismatch
+        token_embeddings = token_embeddings.float()
+        pooled = pooled.float()
         attended_tokens, attention_weights = self.cqksan(token_embeddings, attention_mask)
         mask = attention_mask.unsqueeze(-1)
         hybrid_pooled = (attended_tokens * mask).sum(dim=1) / mask.sum(dim=1).clamp(min=1e-9)
