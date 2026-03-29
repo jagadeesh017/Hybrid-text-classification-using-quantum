@@ -1,462 +1,397 @@
 # Hybrid Quantum-Classical NLP with CQKSAN-DeBERTa
 
-A production-ready hybrid quantum-classical deep learning framework for text classification using DeBERTa embeddings and CQKSAN (Compact Quantum Kernel Self-Attention Network).
+## 📚 What is This Project?
+
+This project demonstrates **text classification** (determining if text is positive/negative sentiment) using a unique **hybrid approach** that combines:
+- **Classical AI:** DeBERTa (a powerful language model)
+- **Quantum Computing:** CQKSAN (a quantum-powered attention layer)
+
+Think of it like: *"Using both traditional AI AND quantum computing together to understand text better."*
 
 **Status:** ✅ Production Ready  
+**Use Case:** Classify text sentiment (movie reviews, product feedback, etc.)  
 **GitHub:** https://github.com/jagadeesh017/Hybrid-text-classification-using-quantum
 
 ---
 
-## Quick Start (5 minutes)
+## 🎯 What Can You Do?
 
-### 1. Clone & Setup
+| Task | Time | Details |
+|------|------|---------|
+| **Test with Pre-trained Model** | 2 min | Use existing trained model to classify text |
+| **Try the Web Interface** | 5 min | Upload text via browser and get instant results |
+| **Train Your Own Model** | 24 hours | Build a custom model with your own settings |
+| **Compare 3 Approaches** | 24+ hours | Run baseline, reduced, and hybrid models side-by-side |
+
+---
+
+## 🚀 Quick Start (Choose Your Path)
+
+### Path A: Test Pre-trained Model (Fastest - 2 minutes)
+
+**Step 1:** Get the code
 ```bash
 git clone https://github.com/jagadeesh017/Hybrid-text-classification-using-quantum.git
 cd Hybrid-text-classification-using-quantum
+```
 
-# Setup (Windows)
+**Step 2:** Install requirements
+```bash
+# Windows
 python -m venv venv
 venv\Scripts\activate
 
-# Setup (macOS/Linux)
+# macOS/Linux
 python -m venv venv
 source venv/bin/activate
 
-# Install dependencies
+# Install packages
 pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-### 2. Validate Installation
+**Step 3:** Set up directories (creates folders + checks setup)
 ```bash
-python validate_setup.py
-```
-
-### 3. Train Model (⏳ 10-30 minutes)
-```bash
-python train.py --config configs/hybrid.yaml
-```
-
-### 4. Launch Gradio Web App
-```bash
-python app.py --config configs/hybrid.yaml
-```
-Visit: **http://127.0.0.1:7860**
-
----
-
-## Pre-trained Models
-
-A pre-trained hybrid model checkpoint is available for immediate inference without training:
-
-**Model:** `best_model.pt` (271 MB)  
-**Location:** `artifacts/runs/hybrid_cqksan_deberta_imdb/best_model.pt`  
-**Training Time:** ~24 hours (GPU)
-
-### Using Pre-trained Model
-
-To use the pre-trained checkpoint for inference:
-
-```bash
-# 1. Verify model file placement
 python setup.py
+```
 
-# 2. Run inference with pre-trained model
+**Step 4a:** Launch web interface (browser-based)
+```bash
+python app.py --config configs/hybrid.yaml
+```
+→ Open: **http://127.0.0.1:7860** in your browser
+
+**Step 4b:** Or test via command line
+```bash
 python inference.py \
   --config configs/hybrid.yaml \
   --checkpoint artifacts/runs/hybrid_cqksan_deberta_imdb/best_model.pt \
-  --text "Your text here"
+  --text "This movie was amazing!"
+```
 
-# 3. Or launch interactive web app
+✅ **Done!** You're classifying text with a quantum model.
+
+---
+
+### Path B: Train Your Own Model (Takes 24 hours, GPU recommended)
+
+```bash
+# 1. Clone and setup (same as above)
+git clone https://github.com/jagadeesh017/Hybrid-text-classification-using-quantum.git
+cd Hybrid-text-classification-using-quantum
+python -m venv venv
+source venv/bin/activate      # Windows: venv\Scripts\activate
+pip install -r requirements.txt
+
+# 2. Train the model
+python train.py --config configs/hybrid.yaml
+
+# 3. Launch the app
 python app.py --config configs/hybrid.yaml
 ```
 
-**Model Availability:** Contact repository maintainer for pre-trained checkpoint access.
+**What happens during training:**
+- Downloads 400 movie reviews (IMDB dataset)
+- Trains the quantum+classical model
+- Saves the trained model to `artifacts/runs/hybrid_cqksan_deberta_imdb/best_model.pt`
+- Saves performance metrics and training history
 
 ---
 
-## Usage
+### Path C: Compare All 3 Models (Takes 24+ hours)
 
-### Train Models
-```bash
-# Hybrid model (recommended)
-python train.py --config configs/hybrid.yaml
-
-# Or run ablation study (all 3 models)
-python run_experiments.py --all
-```
-
-### Inference
-```bash
-python inference.py \
-  --config configs/hybrid.yaml \
-  --checkpoint artifacts/runs/hybrid_cqksan_deberta_imdb/best_model.pt \
-  --text "This movie was fantastic!"
-```
-
-### Run Tests
-```bash
-pytest tests/ -v
-```
-
----
-
-## Architecture
-
-The hybrid model combines three components:
-
-```
-Input Text
-    ↓
-[DeBERTa Encoder] → 768-dim embeddings
-    ↓
-    ├─→ [Classical Path] → Pooling (768)
-    │
-    └─→ [Quantum Path]
-        ├─ Project (768→4)
-        ├─ QuantumTokenEncoder (4-qubit VQC)
-        │  └ Angle embedding + RY gates + CNOT + PauliZ measurement
-        ├─ Kernel Attention
-        └─ Project back (4→768)
-    ↓
-[Fusion] → Concat + Linear (1536→128)
-    ↓
-[Classifier] → Binary classification
-    ↓
-[Output] → Prediction + Confidence
-```
-
-### Three Model Variants
-
-| Model | Architecture | Use Case |
-|-------|--------------|----------|
-| **baseline** | DeBERTa + Classifier | Classical reference |
-| **reduced** | DeBERTa + Feature Reduction | Dimensionality reduction |
-| **hybrid** | DeBERTa + CQKSAN + Fusion | Quantum-classical fusion ⭐ |
-
----
-
-## Project Structure
-
-```
-├── app.py                           # Gradio web interface launcher
-├── train.py                         # Training entry point
-├── inference.py                     # Inference entry point
-├── validate_setup.py                # Pre-flight validation
-├── run_experiments.py               # Run all 3 models
-├── viva_demo.py                     # Interactive demo
-│
-├── src/hqnlp/                       # Main source code
-│   ├── __init__.py                  # Package exports
-│   ├── config.py                    # Configuration management
-│   ├── utils.py                     # Utilities
-│   ├── data/                        # Data loading & preprocessing
-│   ├── models/                      # Model implementations
-│   │   ├── encoder.py              # DeBERTa integration
-│   │   ├── quantum.py              # ⭐ CQKSAN quantum layer
-│   │   └── factory.py              # Model builder
-│   ├── training/                    # Training loop
-│   ├── inference/                   # Inference pipeline
-│   ├── evaluation/                  # Metrics
-│   └── ui/                          # Gradio interface
-│
-├── configs/                         # Configuration files
-│   ├── hybrid.yaml                  # Hybrid config
-│   ├── baseline.yaml                # Baseline config
-│   ├── reduced.yaml                 # Reduced config
-│   └── default.yaml                 # Default config
-│
-├── tests/                           # Unit tests (24 test cases)
-│   ├── test_config.py
-│   └── test_hqnlp.py
-│
-├── artifacts/                       # Generated during training
-│   ├── runs/                        # Model checkpoints
-│   └── cache/                       # Dataset cache
-│
-├── results/                         # Experiment results
-└── requirements.txt                 # Python dependencies
-```
-
----
-
-## System Requirements
-
-- **Python:** 3.8+
-- **Memory:** 8GB+ RAM (16GB+ recommended)
-- **Storage:** 5-10GB (for datasets and models)
-- **GPU:** CUDA-capable (optional, 10x faster)
-
----
-
-## Key Features
-
-✅ **Production-Ready**
-- Comprehensive error handling
-- Logging at all critical points
-- Input validation
-- Checkpoint management
-
-✅ **Quantum Integration**
-- Real PennyLane implementation
-- 4-qubit variational quantum circuit
-- Hardware-ready (quantum simulators or devices)
-
-✅ **Ablation Studies**
-- Baseline (classical only)
-- Reduced (feature projection)
-- Hybrid (quantum-enhanced) ⭐
-
-✅ **Full Testing**
-- 24 unit test cases
-- Configuration validation
-- Edge case handling
-
-✅ **Web Interface**
-- Gradio-based UI
-- Real-time inference
-- Beautiful results display
-
----
-
-## Workflow Examples
-
-### Simple Inference
-```bash
-python inference.py \
-  --config configs/hybrid.yaml \
-  --checkpoint artifacts/runs/hybrid_cqksan_deberta_imdb/best_model.pt \
-  --text "Amazing product!"
-```
-
-### Compare All Models
 ```bash
 python run_experiments.py --all
-cat results/RESULTS.md
+cat results/RESULTS.md  # View comparison
 ```
 
-### Interactive Demo
-```bash
-python viva_demo.py
+This trains and compares:
+1. **Baseline:** Classical AI only (no quantum)
+2. **Reduced:** Classical AI + dimensionality reduction
+3. **Hybrid:** Classical AI + Quantum computing ⭐
+
+---
+
+## 📖 Understanding the Project
+
+### What are the files?
+
+| File | Purpose | You Need To |
+|------|---------|-------------|
+| `app.py` | Web interface (Gradio) | Run to launch browser interface |
+| `train.py` | Training script | Run to train a new model |
+| `inference.py` | Make predictions | Run to test on one text |
+| `setup.py` | Environment setup | Run once to prepare folders |
+| `validate_setup.py` | Check everything works | Run if you get errors |
+| `requirements.txt` | Package dependencies | Let pip install from this |
+
+### What are the folders?
+
+```
+├── configs/          → Settings for training (batch size, learning rate, etc.)
+├── src/hqnlp/        → The actual AI code (models, training, etc.)
+├── tests/            → Automated tests to verify everything works
+├── artifacts/        → Where trained models get saved
+└── results/          → Experiment comparisons
 ```
 
-### Validate Everything
+### What is a "config"?
+
+A configuration file (YAML) that tells the model:
+- How many examples to train on
+- What learning rate to use
+- How many training rounds (epochs)
+- Other settings
+
+**Common configs:**
+- `hybrid.yaml` - Full quantum model (best accuracy)
+- `baseline.yaml` - Classical only (fastest, baseline)
+- `reduced.yaml` - With dimensionality reduction
+
+---
+
+## 🧠 How Does It Work? (Simple Explanation)
+
+### Traditional AI Approach:
+```
+Text → Language Model (DeBERTa) → Classifier → Result
+```
+
+### This Project (Quantum Hybrid):
+```
+Text 
+  ↓
+Language Model (DeBERTa extracts meaning)
+  ↓
+Split into 2 paths:
+  ├─ Classical Path → Regular AI layer
+  └─ Quantum Path → Quantum circuit processes it
+  ↓
+Fusion Layer (combines both paths)
+  ↓
+Classifier (decides positive or negative)
+  ↓
+Result with confidence score
+```
+
+**Why do this?** Quantum computing might find patterns classical AI misses (though on simulators, the advantage is experimental).
+
+---
+
+## 📊 What Results Should You Expect?
+
+When you train the model, you'll get:
+- **Accuracy:** ~88.5% (correctly classifies ~9 out of 10 reviews)
+- **Training Time:** ~6 minutes per epoch (GPU) or ~30 min (CPU)
+- **Total Training:** ~5 epochs = 30 min (GPU) or 2.5 hours (CPU)
+
+Pre-trained models are already fully trained and ready to use (no waiting).
+
+---
+
+## ❓ Common Questions
+
+**Q: Do I need a quantum computer?**  
+A: No! The code uses a quantum simulator (software). Real quantum hardware optional.
+
+**Q: How much disk space?**  
+A: ~2 GB (includes DeBERTa model download)
+
+**Q: Can I use my own dataset?**  
+A: Yes! Edit `configs/hybrid.yaml` and change `dataset_name` or point to your data.
+
+**Q: Why does it take 24 hours to train?**  
+A: Quantum circuits are computationally expensive to simulate. Classical is faster.
+
+**Q: Can I train on CPU?**  
+A: Yes, but it's slow. GPU (NVIDIA/AMD) recommended.
+
+**Q: Can I use this for production?**  
+A: Yes! Code is production-ready with error handling and validation.
+
+---
+
+## 📥 Installation Troubleshooting
+
+### Issue: `ModuleNotFoundError: No module named 'torch'`
 ```bash
-python validate_setup.py
-pytest tests/ -v
+# Solution: Install requirements
+pip install -r requirements.txt
+```
+
+### Issue: `CUDA out of memory`
+```bash
+# Solution: Reduce batch size in config
+# Edit configs/hybrid.yaml
+training:
+  batch_size: 4  # Change from 8 to 4
+```
+
+### Issue: Slow training / progress bar stuck
+```bash
+# This is normal! Quantum circuits are slow
+# GPU training: Wait ~6 min per epoch
+# CPU training: Wait ~30 min per epoch
+```
+
+### Issue: Port 7860 already in use
+```bash
+# Solution: Gradio auto-finds alternate port
+# Check terminal output for actual port (e.g., 7861)
 ```
 
 ---
 
-## Results After Training
+## 🔧 Advanced Usage
 
-After `python train.py`, you get:
-```
-artifacts/runs/hybrid_cqksan_deberta_imdb/
-├── best_model.pt          # Trained model
-├── config.json            # Configuration used
-├── history.json           # Training history (loss, metrics per epoch)
-├── summary.json           # Final metrics (accuracy, F1, etc.)
-└── tokenizer/
-```
+### Custom Training
 
-View training history:
-```bash
-cat artifacts/runs/hybrid_cqksan_deberta_imdb/summary.json
-```
-
----
-
-## Configurations
-
-### Default Config (hybrid.yaml)
+**Edit the training config:**
 ```yaml
+# configs/my_config.yaml
 data:
-  dataset_name: imdb
+  dataset_name: imdb        # Change dataset
+  num_train: 400            # Change number of examples
   num_eval: 100
-  num_train: 400
 
 model:
-  type: hybrid              # baseline, reduced, or hybrid
-  hidden_dim: 128
+  hidden_dim: 128           # Change model size
   dropout: 0.2
 
 training:
-  epoch: 5
-  batch_size: 8
-  learning_rate: 5e-4
-  patience: 2              # Early stopping
-
-inference:
-  checkpoint_path: null    # Set by app.py
+  epoch: 5                  # Number of training rounds
+  batch_size: 8             # Examples per batch
+  learning_rate: 5e-4       # How much to update weights
 ```
 
-### Customize
-Edit any config file or create your own:
+**Run with custom config:**
 ```bash
 python train.py --config configs/my_config.yaml
 ```
 
----
+### Custom Inference
 
-## Common Issues & Solutions
-
-### Issue: "Checkpoint not found"
 ```bash
-# Need to train first
-python train.py --config configs/hybrid.yaml
+python inference.py \
+  --config configs/hybrid.yaml \
+  --checkpoint artifacts/runs/hybrid_cqksan_deberta_imdb/best_model.pt \
+  --text "This is a great product!"
 ```
 
-### Issue: Out of memory
-```bash
-# Edit configs/hybrid.yaml
-training:
-  batch_size: 4  # Reduce from 8
-```
+### Batch Inference
 
-### Issue: Slow training
-- **Normal on CPU** (use GPU if available)
-- Quantum circuit is slower than classical layers
-- First-time download of DeBERTa (~350MB) takes time
+```python
+from src.hqnlp.inference.predict import Predictor
 
-### Issue: Module imports fail
-```bash
-python validate_setup.py  # Check all dependencies
-pip install -r requirements.txt
+predictor = Predictor(config_path="configs/hybrid.yaml", 
+                     checkpoint_path="path/to/model.pt")
+
+texts = ["Text 1", "Text 2", "Text 3"]
+predictions = predictor.predict_batch(texts)
 ```
 
 ---
 
-## Dependencies
+## 🧪 Testing
 
-Core packages:
-- **torch** ≥2.1.0 — Deep learning
-- **transformers** ≥4.38.0 — Pre-trained models
-- **pennylane** ≥0.37.0 — Quantum ML
-- **gradio** ≥5.0.0 — Web UI
-- **datasets** ≥2.18.0 — Data loading
-- **scikit-learn** ≥1.4.0 — Metrics
+**Run all tests:**
+```bash
+pytest tests/ -v
+```
 
-Install all: `pip install -r requirements.txt`
+**Run specific test:**
+```bash
+pytest tests/test_config.py -v
+```
 
 ---
 
-## Performance Benchmarks
+## 📚 Key Concepts Explained
 
-Typical results on IMDB (400 train, 100 eval samples):
-
-| Model | Accuracy | F1-Score | Training Time |
-|-------|----------|----------|----------------|
-| Baseline | 86.5% | 86.5% | 4.5 min |
-| Reduced | 87.5% | 87.5% | 4.8 min |
-| **Hybrid** | **88.5%** | **88.5%** | 6.2 min |
-
-*Quantum advantage demonstrated on simulation hardware*
+| Term | Meaning | Example |
+|------|---------|---------|
+| **DeBERTa** | Pre-trained language model | Understands English like a human |
+| **CQKSAN** | Quantum attention layer | Uses quantum circuits to focus on important parts |
+| **Epoch** | One complete pass through training data | "The model saw all examples once" |
+| **Batch Size** | Examples processed at once | 8 = Process 8 reviews simultaneously |
+| **Checkpoint** | Saved model weights | The trained model file |
+| **Inference** | Making predictions | "Tell me if this review is positive" |
+| **Configuration** | Settings file | "Train with these parameters" |
 
 ---
 
-## Key Files Explained
+## 📊 Project Statistics
 
-### `app.py`
-Launches Gradio web interface. Requires trained model.
-```bash
-python app.py --config configs/hybrid.yaml --server-port 7860
-```
+- **Lines of Code:** ~2000
+- **Unit Tests:** 24 test cases
+- **Models:** 3 variants (baseline, reduced, hybrid)
+- **Training Data:** 400 examples (IMDB reviews)
+- **Evaluation Data:** 100 examples
+- **Quantum Qubits:** 4-qubit VQC
+- **Accuracy:** ~88.5% (hybrid) vs 86.5% (baseline)
 
-### `train.py`
-Training loop with early stopping and checkpointing.
-```bash
-python train.py --config configs/hybrid.yaml
-```
+---
 
-### `inference.py`
-Single or batch inference on text.
-```bash
-python inference.py --config configs/hybrid.yaml --text "..."
-```
+## 🎓 Learning Resources
 
-### `run_experiments.py`
-Train all models and generate comparison report.
-```bash
-python run_experiments.py --all
-```
+If concepts are unfamiliar:
+- **Deep Learning Basics:** See `docs/DEMO_SCRIPT.md`
+- **Quantum Computing:** PennyLane docs (https://pennylane.ai)
+- **Transformers:** Hugging Face docs (https://huggingface.co)
+- **Gradio UI:** Gradio docs (https://gradio.app)
 
-### `validate_setup.py`
-Pre-flight checks before doing anything.
+---
+
+## 🤝 Working with Others
+
+### For Collaborators:
+
+1. **Clone the repo**
+   ```bash
+   git clone https://github.com/jagadeesh017/Hybrid-text-classification-using-quantum.git
+   cd Hybrid-text-classification-using-quantum
+   ```
+
+2. **Install and setup**
+   ```bash
+   python -m venv venv
+   source venv/bin/activate
+   pip install -r requirements.txt
+   python setup.py
+   ```
+
+3. **Get pre-trained model** (ask maintainer for `best_model.pt`)
+
+4. **Start working**
+   ```bash
+   python app.py --config configs/hybrid.yaml
+   ```
+
+### Before Submitting Changes:
+
 ```bash
+# Test your code
+pytest tests/ -v
+
+# Validate setup
 python validate_setup.py
-```
 
-### `viva_demo.py`
-Interactive demonstration of project features.
-```bash
-python viva_demo.py
-```
-
----
-
-## Production Deployment
-
-### Error Handling
-✅ Try-catch on all I/O operations  
-✅ Custom `InferenceError` exception  
-✅ Validation of inputs and configs
-
-### Logging
-✅ Structured logging (INFO, ERROR, WARNING)  
-✅ Logs to console and files  
-✅ Timestamps on all entries
-
-### Testing
-✅ 24 unit tests covering critical functions  
-✅ Configuration validation tests  
-✅ Edge case handling tests
-
-### Documentation
-✅ This README (comprehensive)  
-✅ Docstrings in all modules  
-✅ Configuration examples
-
----
-
-## Advanced Usage
-
-### Custom Dataset
-Edit `configs/my_config.yaml`:
-```yaml
-data:
-  dataset_name: ag_news    # or: imdb, sms_spam
-  num_train: 1000
-  num_eval: 200
-```
-
-### Custom Model
-See `src/hqnlp/models/factory.py` for architecture:
-```python
-from hqnlp.models.factory import build_model
-
-model = build_model(config, num_labels=2)
-```
-
-### Custom Training
-```python
-from hqnlp import load_config
-from hqnlp.training import Trainer
-
-config = load_config("configs/hybrid.yaml")
-trainer = Trainer(config, model, train_loader, ...)
-trainer.fit()
+# Commit changes
+git add .
+git commit -m "Description of changes"
+git push origin main
 ```
 
 ---
 
-## Citation
+## 📝 Citation
 
-If you use this work, please cite:
-```
-@software{cqksan2026,
+If you use this in research:
+
+```bibtex
+@software{cqksan_hybrid_nlp_2026,
   title={Hybrid Quantum-Classical NLP with CQKSAN-DeBERTa},
-  author={Your Name},
+  author={Jagadeesh},
   year={2026},
   url={https://github.com/jagadeesh017/Hybrid-text-classification-using-quantum}
 }
@@ -464,16 +399,25 @@ If you use this work, please cite:
 
 ---
 
-## License
+## 📧 Support
 
-[Your License Here]
+**Something not working?**
+
+1. Check "Troubleshooting" section above
+2. Run `python validate_setup.py` to diagnose
+3. Check `requirements.txt` versions match
+4. Try reinstalling: `pip install -r requirements.txt --force-reinstall`
 
 ---
 
-## Questions?
+## 🎯 Next Steps
 
-1. **Training Issues?** → See "Common Issues & Solutions"
-2. **Architecture Questions?** → See "Architecture" section
-3. **Need More Features?** → Check `src/hqnlp/` for extensible code
+- ✅ Run pre-trained model (Path A)
+- ✅ Train your own model (Path B)
+- ✅ Understand the architecture (How Does It Work? section)
+- ✅ Customize configuration (Advanced Usage)
+- ✅ Integrate into your project (Custom Inference)
 
-**Happy Training! 🚀**
+---
+
+**Happy Classifying! 🚀**
