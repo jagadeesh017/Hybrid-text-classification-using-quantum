@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import logging
 import sys
+from functools import lru_cache
 
 import gradio as gr
 
@@ -11,6 +12,10 @@ from hqnlp.data import resolve_label_names
 from hqnlp.inference.predict import predict_text, InferenceError
 
 logger = logging.getLogger(__name__)
+
+# Global model cache
+_MODEL_CACHE = None
+_PREDICTION_CACHE = lru_cache(maxsize=1000)
 
 
 def build_demo(config_path: str, checkpoint_path: str | None = None):
@@ -36,8 +41,27 @@ def build_demo(config_path: str, checkpoint_path: str | None = None):
         logger.error(f"Failed to load config or checkpoint: {e}")
         raise
 
+    def _cached_predict(text_normalized: str):
+        """Cached prediction function - only called if not in cache."""
+        try:
+            result = predict_text(text_normalized, config, checkpoint, class_names)
+            return (
+                result["label"],
+                round(result["confidence"] * 100, 2),
+                tuple((
+                    class_names[idx] if idx < len(class_names) else str(idx),
+                    round(score, 4)
+                ) for idx, score in enumerate(result["probabilities"]))
+            )
+        except Exception as e:
+            logger.error(f"Prediction error: {e}")
+            raise
+    
+    # Cache the predict function
+    _cached_predict_cached = lru_cache(maxsize=1000)(_cached_predict)
+
     def classify(text: str):
-        """Classify input text with error handling.
+        """Classify input text with caching and error handling.
         
         Args:
             text: Input text to classify
@@ -47,15 +71,16 @@ def build_demo(config_path: str, checkpoint_path: str | None = None):
         """
         if not text or not text.strip():
             return {"error": "Enter some text to classify."}
+        
+        # Normalize text for consistent caching
+        text_normalized = text.strip().lower()
+        
         try:
-            result = predict_text(text, config, checkpoint, class_names)
+            label, confidence, probabilities = _cached_predict_cached(text_normalized)
             return {
-                "prediction": result["label"],
-                "confidence": round(result["confidence"] * 100, 2),
-                "probabilities": {
-                    class_names[idx] if idx < len(class_names) else str(idx): round(score, 4)
-                    for idx, score in enumerate(result["probabilities"])
-                },
+                "prediction": label,
+                "confidence": confidence,
+                "probabilities": {name: score for name, score in probabilities},
             }
         except InferenceError as e:
             logger.error(f"Inference error: {e}")
@@ -69,14 +94,34 @@ def build_demo(config_path: str, checkpoint_path: str | None = None):
             """
             # CQKSAN-DeBERTa Text Classification
             Hybrid quantum-classical text classification with DeBERTa embeddings and CQKSAN attention.
+            
+            ⚡ **Tip**: Repeated inputs are cached for instant results!
             """
         )
         with gr.Row():
             text = gr.Textbox(label="Input text", lines=6, placeholder="Paste a review, news snippet, or SMS here.")
             output = gr.JSON(label="Prediction")
-        button = gr.Button("Run inference")
+        
+        with gr.Row():
+            button = gr.Button("Run inference", variant="primary")
+            clear_button = gr.Button("Clear cache")
+        
+        def clear_cache():
+            _cached_predict_cached.cache_clear()
+            return "Cache cleared! Next prediction will be slower."
+        
         button.click(classify, inputs=text, outputs=output)
         text.submit(classify, inputs=text, outputs=output)
+        clear_button.click(clear_cache, outputs=None)
+        
+        # Warm up model on startup
+        gr.Markdown("_Warming up model..._")
+        try:
+            classify("test")
+            logger.info("Model ready!")
+        except Exception as e:
+            logger.warning(f"Warmup failed: {e}")
+    
     return demo
 
 
