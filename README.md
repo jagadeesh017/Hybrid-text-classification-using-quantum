@@ -4,26 +4,50 @@ A production-ready hybrid quantum-classical deep learning framework for text cla
 
 **Status:** ✅ **Production Ready** — Code-complete, tested, and ready for final demo and deployment.
 
+### Repository Links
+
+- **GitHub Repository:** https://github.com/jagadeesh017/Hybrid-text-classification-using-quantum
+- **Clone Command:** See [Quick Start](#quick-start) below
+- **Documentation:** See `docs/` folder for detailed guides
+
 ## Quick Start
 
-### 1. Environment Setup
+### 1. Clone from GitHub
 
 ```bash
-# Clone/navigate to the project
-cd hybrid-quantum-nlp
+# Clone the repository
+git clone https://github.com/jagadeesh017/Hybrid-text-classification-using-quantum.git
+cd Hybrid-text-classification-using-quantum
 
+# Or if you have SSH key configured:
+git clone git@github.com:jagadeesh017/Hybrid-text-classification-using-quantum.git
+cd Hybrid-text-classification-using-quantum
+```
+
+### 2. Environment Setup
+
+```bash
 # Create virtual environment (recommended)
 python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+# Activate virtual environment
+source venv/bin/activate  # On macOS/Linux
+# OR
+venv\Scripts\activate     # On Windows
+
+# Upgrade pip
+pip install --upgrade pip
 
 # Install dependencies
 pip install -r requirements.txt
 
-# Validate setup
+# Validate setup (run this before anything else!)
 python validate_setup.py
 ```
 
-### 2. Train the Model
+If validation passes, you're ready to go! ✅
+
+### 3. Train the Model
 
 ```bash
 # Train hybrid model (recommended for demo)
@@ -34,7 +58,7 @@ python train.py --config configs/baseline.yaml
 python train.py --config configs/reduced.yaml
 ```
 
-### 3. Run Inference
+### 4. Run Inference
 
 ```bash
 python inference.py \
@@ -43,7 +67,7 @@ python inference.py \
   --text "This movie was absolutely fantastic!"
 ```
 
-### 4. Launch Interactive Web UI
+### 5. Launch Interactive Web UI
 
 ```bash
 python app.py \
@@ -53,6 +77,25 @@ python app.py \
 ```
 
 Visit `http://127.0.0.1:7860` to access the Gradio interface.
+
+### 6. Run Full Experiment Suite (Optional)
+
+To train all three model variants and compare performance:
+
+```bash
+python run_experiments.py --all
+```
+
+This will:
+- Train baseline model
+- Train reduced model
+- Train hybrid model
+- Generate comparison table in `results/RESULTS.md`
+
+View results:
+```bash
+cat results/RESULTS.md
+```
 
 ## Project Overview
 
