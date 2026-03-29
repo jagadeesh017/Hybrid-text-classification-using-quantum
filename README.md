@@ -45,6 +45,36 @@ Visit: **http://127.0.0.1:7860**
 
 ---
 
+## Pre-trained Models
+
+A pre-trained hybrid model checkpoint is available for immediate inference without training:
+
+**Model:** `best_model.pt` (271 MB)  
+**Location:** `artifacts/runs/hybrid_cqksan_deberta_imdb/best_model.pt`  
+**Training Time:** ~24 hours (GPU)
+
+### Using Pre-trained Model
+
+To use the pre-trained checkpoint for inference:
+
+```bash
+# 1. Verify model file placement
+python setup.py
+
+# 2. Run inference with pre-trained model
+python inference.py \
+  --config configs/hybrid.yaml \
+  --checkpoint artifacts/runs/hybrid_cqksan_deberta_imdb/best_model.pt \
+  --text "Your text here"
+
+# 3. Or launch interactive web app
+python app.py --config configs/hybrid.yaml
+```
+
+**Model Availability:** Contact repository maintainer for pre-trained checkpoint access.
+
+---
+
 ## Usage
 
 ### Train Models

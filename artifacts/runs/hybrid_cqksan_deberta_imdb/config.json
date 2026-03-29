@@ -1,0 +1,50 @@
+{
+  "experiment": {
+    "name": "hybrid_cqksan_deberta_imdb",
+    "seed": 42,
+    "output_dir": "artifacts/runs"
+  },
+  "data": {
+    "dataset_name": "imdb",
+    "text_column": null,
+    "label_column": null,
+    "max_length": 128,
+    "train_samples": 400,
+    "eval_samples": 100,
+    "validation_split": 0.1,
+    "cache_dir": "artifacts/cache",
+    "num_workers": 0,
+    "pin_memory": true
+  },
+  "model": {
+    "model_type": "hybrid",
+    "backbone_name": "microsoft/deberta-v3-small",
+    "num_labels": 2,
+    "dropout": 0.2,
+    "freeze_backbone": true,
+    "unfreeze_last_n": 0,
+    "projector_hidden_dim": 128,
+    "reduced_dim": 4,
+    "quantum_layers": 1,
+    "quantum_attention_heads": 1,
+    "classifier_hidden_dim": 128,
+    "use_quantum": true
+  },
+  "training": {
+    "batch_size": 8,
+    "eval_batch_size": 8,
+    "learning_rate": 0.0005,
+    "weight_decay": 0.01,
+    "epochs": 2,
+    "warmup_ratio": 0.1,
+    "grad_clip_norm": 1.0,
+    "gradient_accumulation_steps": 1,
+    "mixed_precision": false,
+    "early_stopping_patience": 2,
+    "metric_for_best_model": "f1"
+  },
+  "inference": {
+    "checkpoint_path": "artifacts/runs/hybrid_cqksan_deberta_imdb/best_model.pt",
+    "class_names": []
+  }
+}
