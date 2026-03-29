@@ -15,5 +15,7 @@ checkpoints/
 *.ckpt
 *.png
 *.log
+training.log
+training_output.log
 .DS_Store
 Thumbs.db
