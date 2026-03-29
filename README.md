@@ -1,219 +1,153 @@
 # Hybrid Quantum-Classical NLP with CQKSAN-DeBERTa
 
-## 📚 What is This Project?
+**Text classification** using quantum + classical AI combined.
 
-This project demonstrates **text classification** (determining if text is positive/negative sentiment) using a unique **hybrid approach** that combines:
-- **Classical AI:** DeBERTa (a powerful language model)
-- **Quantum Computing:** CQKSAN (a quantum-powered attention layer)
-
-Think of it like: *"Using both traditional AI AND quantum computing together to understand text better."*
-
-**Status:** ✅ Production Ready | ✅ Model Trained (288 MB)  
-**Use Case:** Classify text sentiment (movie reviews, product feedback, etc.)  
-**GitHub:** https://github.com/jagadeesh017/Hybrid-text-classification-using-quantum  
-**Model:** Available for download (v1.0 - Pre-trained on IMDB, 88.5% accuracy)
+**Status:** ✅ Model Trained (271 MB, 88.5% accuracy on IMDB)  
+**Repo:** https://github.com/jagadeesh017/Hybrid-text-classification-using-quantum
 
 ---
 
-## 📥 Where to Get the Pre-trained Model
+## 🚀 Quick Start (5 minutes)
 
-The trained model (`best_model.pt`, 271 MB) is available via:
-
-**Option 1: GitHub Releases** (Recommended)
-- Download from: https://github.com/jagadeesh017/Hybrid-text-classification-using-quantum/releases/tag/v1.0-model
-- Place in: `artifacts/runs/hybrid_cqksan_deberta_imdb/best_model.pt`
-
-**Option 2: Direct Contact**
-- Email jagadeesh017 for direct file transfer
-
-**Option 3: Train Yourself** (24 hours, requires GPU)
-- Run: `python train.py --config configs/hybrid.yaml`
-
----
-
-## 🎯 What Can You Do?
-
-| Task | Time | Key Point |
-|------|------|-----------|
-| **Test Pre-trained Model** | 5 min | ✅ Model already available |
-| **Try Web Interface** | 5 min | Zero waiting, instant results |
-| **Train Your Own** | 24 hours | GPU strongly recommended |
-| **Compare 3 Models** | 24+ hours | See baseline vs hybrid |
-
----
-
-## 🚀 Quick Start (Choose Your Path)
-
-### Path A: Use Pre-trained Model (Fastest - 5 minutes)
-
-**Step 1:** Clone the code
 ```bash
+# 1. Clone
 git clone https://github.com/jagadeesh017/Hybrid-text-classification-using-quantum.git
 cd Hybrid-text-classification-using-quantum
-```
 
-**Step 2:** Install dependencies
-```bash
-# Windows
+# 2. Setup
 python -m venv venv
-venv\Scripts\activate
-
-# macOS/Linux
-python -m venv venv
-source venv/bin/activate
-
+venv\Scripts\activate          # Windows: venv\Scripts\activate | macOS/Linux: source venv/bin/activate
 pip install -r requirements.txt
-```
-
-**Step 3:** Get the pre-trained model
-```bash
-# Option A: Download from GitHub Releases
-#   → Go to: https://github.com/jagadeesh017/Hybrid-text-classification-using-quantum/releases
-#   → Download best_model.pt
-#   → Place in: artifacts/runs/hybrid_cqksan_deberta_imdb/
-
-# Option B: Already have the file?
-#   → Place it in: artifacts/runs/hybrid_cqksan_deberta_imdb/best_model.pt
-```
-
-**Step 4:** Create model directory
-```bash
 python setup.py
-```
 
-**Step 5a:** Launch web interface
-```bash
-python app.py --config configs/hybrid.yaml
-```
-→ Open browser to: **http://127.0.0.1:7860**
+# 3. Get model (download best_model.pt from GitHub Releases)
+# Place in: artifacts/runs/hybrid_cqksan_deberta_imdb/best_model.pt
 
-**Step 5b:** Or test on command line
-```bash
-python inference.py \
-  --config configs/hybrid.yaml \
-  --checkpoint artifacts/runs/hybrid_cqksan_deberta_imdb/best_model.pt \
-  --text "This movie was amazing!"
-```
-
-✅ **Done!** Classifying text with quantum model.
-
----
-
-### Path B: Train Your Own Model (24 hours on GPU, 2.5 hours on CPU)
-
-```bash
-# 1. Clone and setup (same as Path A, steps 1-2)
-git clone https://github.com/jagadeesh017/Hybrid-text-classification-using-quantum.git
-cd Hybrid-text-classification-using-quantum
-python -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-
-# 2. Train (this takes time!)
-python train.py --config configs/hybrid.yaml
-
-# 3. Launch app with your trained model
+# 4. Run
 python app.py --config configs/hybrid.yaml
 ```
 
-**What happens:**
-- Downloads 400 movie review examples
-- Trains quantum-classical model
-- Saves checkpoint to: `artifacts/runs/hybrid_cqksan_deberta_imdb/best_model.pt`
-- Saves metrics to: `artifacts/runs/hybrid_cqksan_deberta_imdb/summary.json`
+Open: **http://127.0.0.1:7860**
 
 ---
 
-### Path C: Compare All 3 Models (24+ hours)
+## 📋 Team Workflow
 
+### Clone + Setup
 ```bash
-python run_experiments.py --all
-cat results/RESULTS.md
-```
-
-Compares:
-- **Baseline** (classical only)
-- **Reduced** (with dimensionality reduction)
-- **Hybrid** (quantum-enhanced) ⭐
-
----
-
-## 🤝 For Collaborators (Simple 5-Step Setup)
-
-Want to work on this with us? Follow these 5 simple steps:
-
-```bash
-# Step 1: Clone
-git clone https://github.com/jagadeesh017/Hybrid-text-classification-using-quantum.git
-cd Hybrid-text-classification-using-quantum
-
-# Step 2: Create virtual environment
-python -m venv venv
-venv\Scripts\activate          # Windows
-# source venv/bin/activate     # macOS/Linux
-
-# Step 3: Install packages
+git clone ...
+python -m venv venv && venv\Scripts\activate
 pip install -r requirements.txt
-
-# Step 4: Setup (creates folders)
 python setup.py
-
-# Step 5: Get model from releases or maintainer
-# Download best_model.pt and place in: artifacts/runs/hybrid_cqksan_deberta_imdb/
 ```
 
-Then start working:
+### Create Branch
 ```bash
-python app.py --config configs/hybrid.yaml    # Launch interface
-pytest tests/ -v                               # Run tests
-git add . && git commit -m "your changes"      # Push changes
+git checkout -b feature/your-name
 ```
 
-**That's it!** No complex setup, just 5 steps.
+### Commit & Push
+```bash
+git add .
+git commit -m "type: description"  # feat, fix, refactor, docs, test
+git push origin feature/your-name
+```
+
+### Create PR
+1. Go to GitHub
+2. Click "Compare & pull request"
+3. Fill title & description
+4. Submit
+
+### Before PR
+```bash
+pytest tests/ -v                # Run tests
+python validate_setup.py        # Validate
+```
 
 ---
 
-## 📖 Understanding the Project
-
-### What are the files?
-
-| File | Purpose | When You Need It |
-|------|---------|------------------|
-| `app.py` | Web interface (Gradio) | Run to use the model in browser |
-| `train.py` | Model training | Run to train your own model |
-| `inference.py` | Make predictions | Run to test on single text |
-| `setup.py` | Environment prep | Run once at start |
-| `validate_setup.py` | Check setup | Run if you get errors |
-| `requirements.txt` | Dependencies | Pip reads this automatically |
-
-### What are the folders?
+## 📁 File Structure
 
 ```
-├── configs/          → Training configs (batch size, learning rate, etc.)
-├── src/hqnlp/        → Core AI code
-├── tests/            → Unit tests (24 test cases)
-├── artifacts/        → Trained models saved here
-└── results/          → Experiment comparisons
+src/hqnlp/
+  ├── models/          → Quantum & classical models
+  ├── training/        → Training loop
+  ├── inference/       → Predictions
+  ├── data/            → Dataset handling
+  └── evaluation/      → Metrics
+
+configs/               → Training settings (YAML)
+tests/                 → Unit tests
+artifacts/             → Models (not committed)
 ```
 
-### What is a "config" file?
+---
 
-A YAML file that controls training:
-```yaml
-data:
-  dataset_name: imdb      # Which dataset
-  num_train: 400          # Examples to train on
-model:
-  hidden_dim: 128         # Model complexity
-training:
-  epoch: 5                # Training rounds
-  batch_size: 8           # Examples per batch
+## 🔧 Key Commands
+
+| Command | Purpose |
+|---------|---------|
+| `python train.py --config configs/hybrid.yaml` | Train model (24h) |
+| `python app.py --config configs/hybrid.yaml` | Launch web interface |
+| `python inference.py ...` | Test predictions |
+| `pytest tests/ -v` | Run tests |
+| `python validate_setup.py` | Check setup |
+
+---
+
+## 📥 Model Download
+
+**Pre-trained model available:**  
+→ https://github.com/jagadeesh017/Hybrid-text-classification-using-quantum/releases/tag/v1.0-model
+
+Download `best_model.pt` and place in: `artifacts/runs/hybrid_cqksan_deberta_imdb/best_model.pt`
+
+---
+
+## ❌ Don't Commit These
+
+```
+*.pyc
+__pycache__/
+.pytest_cache/
+artifacts/              (too large)
+.venv/ or venv/
+.env
 ```
 
-Default configs:
-- `hybrid.yaml` - Full quantum model ⭐ (best)
-- `baseline.yaml` - Classical only (fastest)
-- `reduced.yaml` - With feature reduction
+Already in `.gitignore` ✓
+
+---
+
+## 🧪 Test Before Submitting
+
+```bash
+pytest tests/ -v
+python validate_setup.py
+```
+
+---
+
+## Project Info
+
+- **Framework:** PyTorch, PennyLane (quantum), Transformers
+- **Model:** DeBERTa + 4-qubit CQKSAN
+- **Dataset:** IMDB (400 train, 100 eval)
+- **Accuracy:** 88.5% (hybrid) vs 86.5% (baseline)
+
+---
+
+## 📚 Documentation
+
+- **What it is?** → See above
+- **How to use?** → Quick Start section
+- **How to contribute?** → Team Workflow section
+- **Architecture?** → Check `src/hqnlp/models/`
+
+---
+
+**Ready to work?** Clone, setup, create branch, and start coding! 🚀
 
 
 ---
